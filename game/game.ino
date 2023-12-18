@@ -358,7 +358,7 @@ void addHighscore(int rank) {
   //   EEPROM.put(highScoreAddress + i * (3+sizeof(currentScore)) + sizeof(currentScore) + 2, highscoreNames[i][2]);
   // }
   
-  for(i = highScoreEntries - 1; i > rank; i--) {
+  for(int i = highScoreEntries - 1; i > rank; i--) {
     highscores[i] = highscores[i - 1];
     highscoreNames[i][0] = highscoreNames[i - 1][0];
     highscoreNames[i][1] = highscoreNames[i - 1][1];
