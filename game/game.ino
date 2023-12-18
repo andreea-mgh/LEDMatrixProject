@@ -346,27 +346,39 @@ void resetHighscores() {
 }
 
 void addHighscore(int rank) {
-  for(int i = rank + 1; i < highScoreEntries; i++) {
+  // for(int i = rank + 1; i < highScoreEntries; i++) {
+  //   highscores[i] = highscores[i - 1];
+  //   highscoreNames[i][0] = highscoreNames[i - 1][0];
+  //   highscoreNames[i][1] = highscoreNames[i - 1][1];
+  //   highscoreNames[i][2] = highscoreNames[i - 1][2];
+
+  //   EEPROM.put(highScoreAddress + i * (3+sizeof(currentScore)), highscores[i]);
+  //   EEPROM.put(highScoreAddress + i * (3+sizeof(currentScore)) + sizeof(currentScore), highscoreNames[i][0]);
+  //   EEPROM.put(highScoreAddress + i * (3+sizeof(currentScore)) + sizeof(currentScore) + 1, highscoreNames[i][1]);
+  //   EEPROM.put(highScoreAddress + i * (3+sizeof(currentScore)) + sizeof(currentScore) + 2, highscoreNames[i][2]);
+  // }
+  
+  for(i = highScoreEntries - 1; i > rank; i--) {
     highscores[i] = highscores[i - 1];
     highscoreNames[i][0] = highscoreNames[i - 1][0];
     highscoreNames[i][1] = highscoreNames[i - 1][1];
     highscoreNames[i][2] = highscoreNames[i - 1][2];
 
-    EEPROM.put(highScoreAddress + i * (3+sizeof(currentScore)), highscores[i]);
-    EEPROM.put(highScoreAddress + i * (3+sizeof(currentScore)) + sizeof(currentScore), highscoreNames[i][0]);
-    EEPROM.put(highScoreAddress + i * (3+sizeof(currentScore)) + sizeof(currentScore) + 1, highscoreNames[i][1]);
-    EEPROM.put(highScoreAddress + i * (3+sizeof(currentScore)) + sizeof(currentScore) + 2, highscoreNames[i][2]);
+    EEPROM.put(highScoreAddress + i * (3 + sizeof(currentScore)), highscores[i]);
+    EEPROM.put(highScoreAddress + i * (3 + sizeof(currentScore)) + sizeof(currentScore), highscoreNames[i][0]);
+    EEPROM.put(highScoreAddress + i * (3 + sizeof(currentScore)) + sizeof(currentScore) + 1, highscoreNames[i][1]);
+    EEPROM.put(highScoreAddress + i * (3 + sizeof(currentScore)) + sizeof(currentScore) + 2, highscoreNames[i][2]);
   }
-  
+
   highscores[rank] = currentScore;
   highscoreNames[rank][0] = playerName[0];
   highscoreNames[rank][1] = playerName[1];
   highscoreNames[rank][2] = playerName[2];
 
-  EEPROM.put(highScoreAddress + rank * (3+sizeof(currentScore)), currentScore);
-  EEPROM.put(highScoreAddress + rank * (3+sizeof(currentScore)) + sizeof(currentScore), playerName[0]);
-  EEPROM.put(highScoreAddress + rank * (3+sizeof(currentScore)) + sizeof(currentScore) + 1, playerName[1]);
-  EEPROM.put(highScoreAddress + rank * (3+sizeof(currentScore)) + sizeof(currentScore) + 2, playerName[2]);
+  EEPROM.put(highScoreAddress + rank * (3 + sizeof(currentScore)), currentScore);
+  EEPROM.put(highScoreAddress + rank * (3 + sizeof(currentScore)) + sizeof(currentScore), playerName[0]);
+  EEPROM.put(highScoreAddress + rank * (3 + sizeof(currentScore)) + sizeof(currentScore) + 1, playerName[1]);
+  EEPROM.put(highScoreAddress + rank * (3 + sizeof(currentScore)) + sizeof(currentScore) + 2, playerName[2]);
 }
 
 void buttonPress() {
