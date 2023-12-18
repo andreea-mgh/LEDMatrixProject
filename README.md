@@ -24,7 +24,7 @@ In order to complete the level you need to get to the bottom right corner of the
 
 # Hardware
 
-!(hardware schematic)[img/schematic.png]
+![hardware schematic](img/schematic.png)
 
 ## Components
 
