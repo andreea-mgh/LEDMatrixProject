@@ -270,7 +270,6 @@ void loadLevel(int level = 0) {
 }
 
 void drawMap(int cameraX, int cameraY) {
-  // Serial.println("drawMap");
   ledMatrix.clearDisplay(0);
   for (int i = cameraY; i < cameraY + matrixSize; i++) {
     for (int j = cameraX; j < cameraX + matrixSize; j++) {
@@ -287,8 +286,6 @@ void drawMonsters(int cameraX, int cameraY) {
       dangerLevel = 2; // danger
       if(millis() - monsters[i].lastMoveTime > monsterMoveDelay) {
         monsters[i].go(survivor.getX(), survivor.getY());
-        
-        Serial.println("draw monsters draw map");
         drawMap(cameraX, cameraY);
       }
       monsters[i].draw(monsterBlinkRate);
@@ -855,9 +852,9 @@ void loop() {
     int yValue = analogRead(pinY);
     bool playerMoved = false;
     if (millis() - survivor.lastMoveTime > moveDelay) {
+      // left
       if (xValue < joystickMinThreshold) {
         if (survivor.getX() > 0) {
-
           if (gameMap[survivor.getY()][survivor.getX() - 1] == 0) {
             playerMoved = true;
             survivor.moveLeft();
@@ -865,6 +862,7 @@ void loop() {
           }
         }
       }
+      // right
       if (xValue > joystickMaxThreshold) {
         if (survivor.getX() < mapSize) {
 
@@ -875,6 +873,7 @@ void loop() {
           }
         }
       }
+      // up
       if (yValue < joystickMinThreshold) {
         if (survivor.getY() > 0) {
 
@@ -885,6 +884,7 @@ void loop() {
           }
         }
       }
+      // down
       if (yValue > joystickMaxThreshold) {
         if (survivor.getY() < mapSize) {
 
@@ -898,7 +898,6 @@ void loop() {
     }
 
     // camera movement
-    
     if(survivor.getX() - cameraX > 5 && cameraX < mapSize - matrixSize) {
       cameraX = survivor.getX() - 5;
     }
@@ -912,10 +911,10 @@ void loop() {
       cameraY = survivor.getY() - 2;
     }
 
+    // redraw stuff if player moved
     if(playerMoved) {
       ledMatrix.clearDisplay(0);
       if(flash) {
-        Serial.println("move player draw map");
         drawMap(cameraX, cameraY);
         drawMonsters(cameraX, cameraY);
       }
@@ -926,7 +925,6 @@ void loop() {
 
     // flash
     if(buttonTrigger) {
-      Serial.println("flash on draw map");
       drawMap(cameraX, cameraY);
       drawMonsters(cameraX, cameraY);
       flash = true;
@@ -938,7 +936,6 @@ void loop() {
       if(millis() - flashStartTime > flashDuration) {
         flash = false;
         ledMatrix.clearDisplay(0);
-        Serial.println("flash off");
       }
     }
     else {
