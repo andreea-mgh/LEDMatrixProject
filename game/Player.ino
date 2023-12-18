@@ -5,7 +5,7 @@
 Player::Player(LedControl* lc, int x = 0, int y = 0) {
 	this->x = x;
   this->y = y;
-  this->lives = 2;
+  this->lives = 3;
   ledMatrix = lc;
   this->lastMoveTime = millis();
   this->lastLifeLostTime = 0;

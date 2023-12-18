@@ -21,11 +21,6 @@ void Monster::draw(unsigned long blinkRate) {
 
 void Monster::go(int target_x, int target_y) {
 
-  Serial.print("MOVING FROM ");
-  Serial.print(x);
-  Serial.print(", ");
-  Serial.print(y);
-
   if(target_x > x && gameMap[y][x+1] == 0) {
     x++;
   }

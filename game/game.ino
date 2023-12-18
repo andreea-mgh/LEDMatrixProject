@@ -18,7 +18,7 @@ const byte lcd_bl = 10;
 LiquidCrystal lcd(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7);
 
 byte lcdBrightness = 128;
-byte lcdBrightnessMax = 255;
+byte lcdBrightnessMax = 248;
 byte matrixBrightness = 2;
 byte matrixBrightnessMax = 15;
 
@@ -261,10 +261,6 @@ void loadLevel(int level = 0) {
         else if(tile == 2) {
           gameMap[i][j] = 0;
           monsters[numMonsters] = Monster(&ledMatrix, j, i);
-          Serial.print("Monster at ");
-          Serial.print(monsters[numMonsters].getX());
-          Serial.print(" ");
-          Serial.println(monsters[numMonsters].getY());
           numMonsters++;
         }
       }
@@ -274,7 +270,7 @@ void loadLevel(int level = 0) {
 }
 
 void drawMap(int cameraX, int cameraY) {
-  Serial.println("drawMap");
+  // Serial.println("drawMap");
   ledMatrix.clearDisplay(0);
   for (int i = cameraY; i < cameraY + matrixSize; i++) {
     for (int j = cameraX; j < cameraX + matrixSize; j++) {
@@ -291,6 +287,8 @@ void drawMonsters(int cameraX, int cameraY) {
       dangerLevel = 2; // danger
       if(millis() - monsters[i].lastMoveTime > monsterMoveDelay) {
         monsters[i].go(survivor.getX(), survivor.getY());
+        
+        Serial.println("draw monsters draw map");
         drawMap(cameraX, cameraY);
       }
       monsters[i].draw(monsterBlinkRate);
@@ -361,13 +359,6 @@ void addHighscore(int rank) {
     EEPROM.put(highScoreAddress + i * (3+sizeof(currentScore)) + sizeof(currentScore), highscoreNames[i][0]);
     EEPROM.put(highScoreAddress + i * (3+sizeof(currentScore)) + sizeof(currentScore) + 1, highscoreNames[i][1]);
     EEPROM.put(highScoreAddress + i * (3+sizeof(currentScore)) + sizeof(currentScore) + 2, highscoreNames[i][2]);
-    
-    Serial.print(i);
-    Serial.print(' ');
-    Serial.print(highscores[i]);
-    Serial.print(' ');
-    Serial.print(highscoreNames[i]);
-    Serial.print('\n');
   }
   
   highscores[rank] = currentScore;
@@ -379,13 +370,6 @@ void addHighscore(int rank) {
   EEPROM.put(highScoreAddress + rank * (3+sizeof(currentScore)) + sizeof(currentScore), playerName[0]);
   EEPROM.put(highScoreAddress + rank * (3+sizeof(currentScore)) + sizeof(currentScore) + 1, playerName[1]);
   EEPROM.put(highScoreAddress + rank * (3+sizeof(currentScore)) + sizeof(currentScore) + 2, playerName[2]);
-
-  Serial.print(rank);
-  Serial.print(' ');
-  Serial.print(currentScore);
-  Serial.print(' ');
-  Serial.print(playerName);
-  Serial.print('\n');
 }
 
 void buttonPress() {
@@ -402,8 +386,7 @@ void buttonPress() {
 }
 
 void setup() {
-  Serial.begin(9600);
-  Serial.println(sizeof(gameLevels));  
+  Serial.begin(9600); 
 
   lcdBrightness = EEPROM.read(0);
   matrixBrightness = EEPROM.read(1);
@@ -689,7 +672,7 @@ void loop() {
         // joy down
         if (yValue < joystickMinThreshold) {
           if(currentOption == 0 && lcdBrightness < lcdBrightnessMax) {
-            lcdBrightness++;
+            lcdBrightness+=8;
             analogWrite(lcd_bl, lcdBrightness);
             lcd.clear();
             lcd.setCursor(0, 0);
@@ -703,7 +686,7 @@ void loop() {
             ledMatrix.setIntensity(0, matrixBrightness);
             lcd.clear();
             lcd.setCursor(0, 0);
-            lcd.print(F("   MATRIX      >"));
+            lcd.print(F("<  MATRIX      >"));
             lcd.setCursor(3, 1);
             lcd.print(matrixBrightness);
             menuMoveTime = millis();
@@ -725,9 +708,10 @@ void loop() {
         // joy up
         if(yValue > joystickMaxThreshold) {
           if(currentOption == 0 && lcdBrightness > 0) {
-            lcdBrightness--;
+            lcdBrightness-=8;
             analogWrite(lcd_bl, lcdBrightness);
-            lcd.setCursor(0, 0);
+            lcd.clear();
+            lcd.setCursor(3, 0);
             lcd.print(F("   LCD         >"));
             lcd.setCursor(3, 1);
             lcd.print(lcdBrightness);
@@ -736,8 +720,9 @@ void loop() {
           else if(currentOption == 1 && matrixBrightness > 0) {
             matrixBrightness--;
             ledMatrix.setIntensity(0, matrixBrightness);
+            lcd.clear();
             lcd.setCursor(0, 0);
-            lcd.print(F("   MATRIX      >"));
+            lcd.print(F("<  MATRIX      >"));
             lcd.setCursor(3, 1);
             lcd.print(matrixBrightness);
             menuMoveTime = millis();
@@ -854,6 +839,7 @@ void loop() {
 
   // GAME
   else if(gameStatus == 1) {
+    // sound events
     if(soundsEnabled) {
       if(millis() - levelStartTime < 100) tone(buzzPin, 440);
       else if(millis() - levelStartTime < 400) tone(buzzPin, 587);
@@ -873,8 +859,8 @@ void loop() {
         if (survivor.getX() > 0) {
 
           if (gameMap[survivor.getY()][survivor.getX() - 1] == 0) {
-            survivor.moveLeft();
             playerMoved = true;
+            survivor.moveLeft();
             survivor.lastMoveTime = millis();
           }
         }
@@ -883,8 +869,8 @@ void loop() {
         if (survivor.getX() < mapSize) {
 
           if (gameMap[survivor.getY()][survivor.getX() + 1] == 0) {
-            survivor.moveRight();
             playerMoved = true;
+            survivor.moveRight();
             survivor.lastMoveTime = millis();
           }
         }
@@ -893,8 +879,8 @@ void loop() {
         if (survivor.getY() > 0) {
 
           if (gameMap[survivor.getY() - 1][survivor.getX()] == 0) {
-            survivor.moveUp();
             playerMoved = true;
+            survivor.moveUp();
             survivor.lastMoveTime = millis();
           }
         }
@@ -903,8 +889,8 @@ void loop() {
         if (survivor.getY() < mapSize) {
 
           if (gameMap[survivor.getY() + 1][survivor.getX()] == 0) {
-            survivor.moveDown();
             playerMoved = true;
+            survivor.moveDown();
             survivor.lastMoveTime = millis();
           }
         }
@@ -912,53 +898,24 @@ void loop() {
     }
 
     // camera movement
+    
     if(survivor.getX() - cameraX > 5 && cameraX < mapSize - matrixSize) {
       cameraX = survivor.getX() - 5;
-      ledMatrix.clearDisplay(0);
-      if(flash) {
-        drawMap(cameraX, cameraY);
-        drawMonsters(cameraX, cameraY);
-      }
-      else {
-        see(cameraX, cameraY, survivor.getX(), survivor.getY());
-      }
     }
     else if(survivor.getY() - cameraY > 5 && cameraY < mapSize - matrixSize) {
       cameraY = survivor.getY() - 5;
-      ledMatrix.clearDisplay(0);
-      if(flash) {
-        drawMap(cameraX, cameraY);
-        drawMonsters(cameraX, cameraY);
-      }
-      else {
-        see(cameraX, cameraY, survivor.getX(), survivor.getY());
-      }
     }
     else if(survivor.getX() - cameraX < 2 && cameraX > 0) {
       cameraX = survivor.getX() - 2;
-      ledMatrix.clearDisplay(0);
-      if(flash) {
-        drawMap(cameraX, cameraY);
-        drawMonsters(cameraX, cameraY);
-      }
-      else {
-        see(cameraX, cameraY, survivor.getX(), survivor.getY());
-      }
     }
     else if(survivor.getY() - cameraY < 2 && cameraY > 0) {
       cameraY = survivor.getY() - 2;
-      ledMatrix.clearDisplay(0);
-      if(flash) {
-        drawMap(cameraX, cameraY);
-        drawMonsters(cameraX, cameraY);
-      }
-      else {
-        see(cameraX, cameraY, survivor.getX(), survivor.getY());
-      } 
     }
-    else if(playerMoved) {
+
+    if(playerMoved) {
       ledMatrix.clearDisplay(0);
       if(flash) {
+        Serial.println("move player draw map");
         drawMap(cameraX, cameraY);
         drawMonsters(cameraX, cameraY);
       }
@@ -967,33 +924,29 @@ void loop() {
       }
     }
 
-    //flash
+    // flash
     if(buttonTrigger) {
-      Serial.println(F("FLASH"));
+      Serial.println("flash on draw map");
       drawMap(cameraX, cameraY);
       drawMonsters(cameraX, cameraY);
       flash = true;
       flashStartTime = millis();
       buttonTrigger = false;
     }
-    
     if(flash) {
-      // lcd.setCursor(0, 1);
-      // lcd.write(byte(2));
+      drawMonsters(cameraX, cameraY);
       if(millis() - flashStartTime > flashDuration) {
         flash = false;
         ledMatrix.clearDisplay(0);
+        Serial.println("flash off");
       }
-      drawMonsters(cameraX, cameraY);
     }
     else {
       dangerLevel = 0;
       checkMonsters(survivor.getX(), survivor.getY());
-      // lcd.setCursor(0, 1);
-      // lcd.print(F(" "));
     }
 
-    // win/lose conditions
+    // win conditions + scoring
     if(survivor.getX() == mapSize - 2 && survivor.getY() == mapSize - 2) {
       currentScore += survivor.getLives() * lifeBonus;
       if((millis() - levelStartTime) / 1000 < bonusTimeLimit[currentLevel]) {
@@ -1014,6 +967,7 @@ void loop() {
       }
     }
 
+    // lose conditions
     if(survivor.getLives() == 0) {
       gameStatus = 2;
       currentMenu = 0;
@@ -1049,16 +1003,18 @@ void loop() {
       buttonTrigger = false;
       displayImage(matrixImages[0]);
       if(gameWon) {
-        lcd.setCursor(0, 0);
-        lcd.print(F(" YOU ESCAPED.    "));
+        lcd.clear();
+        lcd.setCursor(1, 0);
+        lcd.print(F("YOU ESCAPED."));
         lcd.setCursor(0, 1);
         currentScore += winBonus;
         lcd.print(F("/// SCORE: "));
         lcd.print(currentScore);
       }
       else {
-        lcd.setCursor(0, 0);
-        lcd.print(F(" YOU DIED.       "));
+        lcd.clear();
+        lcd.setCursor(1, 0);
+        lcd.print(F("YOU DIED."));
         lcd.setCursor(0, 1);
         lcd.print(F("/// SCORE: "));
         lcd.print(currentScore);
@@ -1090,7 +1046,7 @@ void loop() {
             addHighscore(i);
             lcd.clear();
             lcd.setCursor(0, 0);
-            lcd.print(F("YOU ARE IN THE  "));
+            lcd.print(F("YOU ARE IN THE"));
             lcd.setCursor(0, 1);
             lcd.print(F("TOP "));
             lcd.print(i + 1);
