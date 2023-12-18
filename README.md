@@ -1,2 +1,1 @@
-# LEDMatrixProject
-Arduino LED Matrix Game
+![game logo](img/game_logo.png)
