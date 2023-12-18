@@ -20,3 +20,16 @@ Explore different maze-like levels and try to get out in one piece. Avoiding the
 
 Move with your joystick, click the joystick button to enable your flashlight for a few seconds.
 
+In order to complete the level you need to get to the bottom right corner of the map.
+
+# Hardware
+
+!(hardware schematic)[img/schematic.png]
+
+## Components
+
+* Arduino UNO development board
+* 8x8 LED Matrix + MAX7219 driver
+* 16x2 LCD screen + potentiometer for screen contrast
+* joystick module
+* passive buzzer
