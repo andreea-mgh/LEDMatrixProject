@@ -33,3 +33,7 @@ In order to complete the level you need to get to the bottom right corner of the
 * 16x2 LCD screen + potentiometer for screen contrast
 * joystick module
 * passive buzzer
+
+# Video Demonstration
+
+:tv: [Watch on YouTube](https://youtu.be/fG2CSYg6Ues)
